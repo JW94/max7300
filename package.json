@@ -1,0 +1,14 @@
+{
+  "name": "max7300",
+  "version": "1.0.0",
+  "description": "Module to controle the max7300aax+",
+  "main": "i2c-max7300.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "max7300"
+  ],
+  "author": "Jonathan Weinert",
+  "license": "ISC"
+}
