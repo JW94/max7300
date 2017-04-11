@@ -1,5 +1,4 @@
 var i2c = require('i2c');
-globalContext.set("bl_max7300_initialised","false");
 
 var max7300 = function(device, address) 
 {
@@ -7,7 +6,6 @@ var max7300 = function(device, address)
 	this.address = address;
 	this.wire = new i2c(this.address,{device: this.device});
     var globalContext = this.context().global;
-    globalContext.set("bl_max7300_initialised","true");
 }
 
 
@@ -93,6 +91,7 @@ max7300.prototype.test = function(callback)
     callback("Hallo");
 }
 
+// Some tests
 // var max = new max7300('/dev/i2c-2', 0x40);
 
 // max.getModeMax7300(function(data)
