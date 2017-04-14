@@ -1,3 +1,5 @@
+'use strict';
+
 var i2c = require('i2c');
 
 var max7300 = function(device, address) 
@@ -45,7 +47,6 @@ max7300.prototype.getConfigPinMax7300 = function(int_pin,callback)
     var cmd = "";
     var tempConfig= "";
     var parsedConfig= "";
-    console.log("Pin: " + int_pin);
     if(int_pin >= 0 && int_pin < 4)
     {
         int_port = 0;
@@ -75,8 +76,6 @@ max7300.prototype.getConfigPinMax7300 = function(int_pin,callback)
         int_port = 5;
         int_pin = int_pin - 20;
     }
-    console.log("Pin-Wert: " + int_pin);
-    console.log("Portbereich: " + int_port);
     
     switch(int_port)
     {
@@ -107,7 +106,6 @@ max7300.prototype.getConfigPinMax7300 = function(int_pin,callback)
                     data[i] = 0;
                 }
             }
-            console.log("4-Bit Config: " + data[0]);
             latestConfig = data[0];
             for(i=0; i<4; i++)
             {
@@ -135,7 +133,6 @@ max7300.prototype.getConfigPinMax7300 = function(int_pin,callback)
             }
             // actually /16 is unecessary but it's running ;) therefore no change now
             // I expected that i need a 8bit variable but 4 bit is only needed
-            console.log("4-Bit Config parsed: " + parsedConfig);
             if((parsedConfig/16) & Math.pow(2,int_pin))
             {
                 data[0] = true;
@@ -144,7 +141,6 @@ max7300.prototype.getConfigPinMax7300 = function(int_pin,callback)
             {
                 data[0] = false;
             }
-            console.log("Vor callback: " + data[0]);
             callback(data[0]);
     });
 }
@@ -154,7 +150,6 @@ max7300.prototype.setConfigPinMax7300 = function(int_pin,state,callback)
     var port = "";
     var tempConfig= "";
     var parsedConfig= "";
-    console.log("Pin: " + int_pin);
     if(int_pin >= 0 && int_pin < 4)
     {
         int_port = 0;
@@ -184,8 +179,6 @@ max7300.prototype.setConfigPinMax7300 = function(int_pin,state,callback)
         int_port = 5;
         int_pin = int_pin - 20;
     }
-    console.log("Pin-Wert: " + int_pin);
-    console.log("Portbereich: " + int_port);
     
     switch(int_port)
     {
@@ -219,19 +212,8 @@ max7300.prototype.setConfigPinMax7300 = function(int_pin,state,callback)
                 data[i] = 0;
             }
         }
-        // if(state)
-        // {
-            // data[0]  |= (1 << int_pin);
-        // }
-        // else
-        // {
-            // data[0]  &= ~(1 << int_pin);
-        // }
         var latestConfig = data[0]
-        console.log("8-Bit Daten: " + latestConfig);
-        console.log("Maskiere mit: " + (3 << (int_pin*2)));
         latestConfig = latestConfig& ~(3 << (int_pin*2));
-        console.log("8-Bit Daten nach maskiert: " + latestConfig);
         if(state)
         {
             latestConfig = latestConfig | (1 << 2*int_pin);
@@ -240,7 +222,6 @@ max7300.prototype.setConfigPinMax7300 = function(int_pin,state,callback)
         {
             latestConfig = latestConfig | (2 << 2*int_pin);
         }
-        console.log("8-Bit Daten vor schicken: " + latestConfig);
         i2cCon.writeBytes(port,[latestConfig], function(err)
         {
             callback(err);
@@ -289,7 +270,6 @@ max7300.prototype.getStateMax7300 = function(int_pin,callback)
         state = data[0] & Math.pow(2,int_pin);
         if(state !== 0)
         {
-            // json output for control switch
             data[0] = true;
         }
         else
