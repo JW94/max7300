@@ -6,6 +6,7 @@ var max7300 = function(device, address)
 {
     this.device = device;
     this.address = address;
+    this.lock = false;
     this.wire = new i2c(this.address,{device: this.device});
 }
 
@@ -149,6 +150,7 @@ max7300.prototype.getConfigPinMax7300 = function(int_pin,callback)
 
 max7300.prototype.setConfigPinMax7300 = function(int_pin,state,callback)
 {
+    var self = this;
     var port = "";
     var int_port= "";
     var int_pin_temp = int_pin;
@@ -205,33 +207,42 @@ max7300.prototype.setConfigPinMax7300 = function(int_pin,state,callback)
             break;
     }
     i2cCon = this.wire;
-    setTimeout(function () 
+    var _locked = setInterval(function()
     {
-        i2cCon.readBytes(port,1, function(err,data)
+        if(!self.lock)
         {
-            for (var i = 0; i<data.length; i++) 
+            self.lock = true;
+            i2cCon.readBytes(port,1, function(err,data)
             {
-                if (isNaN(parseInt(data[i]))) 
+                for (var i = 0; i<data.length; i++) 
                 {
-                    data[i] = 0;
+                    if (isNaN(parseInt(data[i]))) 
+                    {
+                        data[i] = 0;
+                    }
                 }
-            }
-            var latestConfig = data[0]
-            latestConfig = latestConfig& ~(3 << (int_pin*2));
-            if(state)
-            {
-                latestConfig = latestConfig | (1 << 2*int_pin);
-            }
-            else
-            {
-                latestConfig = latestConfig | (2 << 2*int_pin);
-            }
-            i2cCon.writeBytes(port,[latestConfig], function(err)
-            {
-                callback(err);
+                var latestConfig = data[0]
+                latestConfig = latestConfig& ~(3 << (int_pin*2));
+                if(state)
+                {
+                    latestConfig = latestConfig | (1 << 2*int_pin);
+                }
+                else
+                {
+                    latestConfig = latestConfig | (2 << 2*int_pin);
+                }
+                i2cCon.writeBytes(port,[latestConfig], function(err)
+                {
+                    callback(err);
+                });
             });
-        });
-    }, int_pin_temp*100);
+            clearInterval(_locked);
+            setTimeout(function()
+            {
+                self.lock = false;
+            },10);
+        }
+    }, 100);
 }
 
 max7300.prototype.getStateMax7300 = function(int_pin,callback)
@@ -289,6 +300,7 @@ max7300.prototype.getStateMax7300 = function(int_pin,callback)
 
 max7300.prototype.setStatePinMax7300 = function(int_pin,state,callback)
 {
+    var self = this;
     var port = "";
     var int_port="";
     var int_pin_temp = int_pin;
@@ -319,43 +331,55 @@ max7300.prototype.setStatePinMax7300 = function(int_pin,state,callback)
             port = 0x54;
             break;
     }
-    i2cCon = this.wire;
-    
-    setTimeout(function () 
+    i2cCon = self.wire;
+    var _locked = setInterval(function()
     {
-        i2cCon.readBytes(port,1, function(err,data)
+        if(!self.lock)
         {
-            for (var i = 0; i<data.length; i++) 
+            self.lock = true;
+            i2cCon.readBytes(port,1, function(err,data)
             {
-                if (isNaN(parseInt(data[i]))) 
+                for (var i = 0; i<data.length; i++) 
                 {
-                    data[i] = 0;
+                    if (isNaN(parseInt(data[i]))) 
+                    {
+                        data[i] = 0;
+                    }
                 }
-            }
-            if(state)
-            {
-                data[0]  |= (1 << int_pin);
-            }
-            else
-            {
-                data[0]  &= ~(1 << int_pin);
-            }
-            i2cCon.writeBytes(port,[data[0]], function(err)
-            {
-                callback(err);
+                if(state)
+                {
+                    data[0]  |= (1 << int_pin);
+                }
+                else
+                {
+                    data[0]  &= ~(1 << int_pin);
+                }
+                i2cCon.writeBytes(port,[data[0]], function(err)
+                {
+                    callback(err);
+                });
             });
-        });
-    }, int_pin_temp*100);
+            clearInterval(_locked);
+            setTimeout(function()
+            {
+                self.lock = false;
+            },10);
+        }
+    }, 100);
 }
-
 
 // Some tests
 // var max = new max7300('/dev/i2c-2', 0x40);
 
-// max.getModeMax7300(function(data)
+// // max.getModeMax7300(function(data)
+// // {
+    // // console.log(data);
+// // });
+
+// var inter = setInterval(function()
 // {
-    // console.log(data);
-// });
+    // console.log(max.lock);
+// },70);
 
  // max.getConfigPinMax7300(0,function(data)
 // {
@@ -391,8 +415,7 @@ max7300.prototype.setStatePinMax7300 = function(int_pin,state,callback)
 // });
 
 
-
-// max.setStatePinMax7300(0,0,function(err)
+// max.setStatePinMax7300(0,1,function(err)
 // {
     // // returns the states of pins
     // // 0: p0.0
@@ -400,5 +423,36 @@ max7300.prototype.setStatePinMax7300 = function(int_pin,state,callback)
     // // 2: p0.2....
     // console.log(err);
 // });
-
+// max.setStatePinMax7300(1,1,function(err)
+// {
+    // // returns the states of pins
+    // // 0: p0.0
+    // // 1: p0.1
+    // // 2: p0.2....
+    // console.log(err);
+// });
+// max.setStatePinMax7300(2,1,function(err)
+// {
+    // // returns the states of pins
+    // // 0: p0.0
+    // // 1: p0.1
+    // // 2: p0.2....
+    // console.log(err);
+// });
+// max.setStatePinMax7300(3,1,function(err)
+// {
+    // // returns the states of pins
+    // // 0: p0.0
+    // // 1: p0.1
+    // // 2: p0.2....
+    // console.log(err);
+// });
+// max.setStatePinMax7300(4,1,function(err)
+// {
+    // // returns the states of pins
+    // // 0: p0.0
+    // // 1: p0.1
+    // // 2: p0.2....
+    // console.log(err);
+// });
 module.exports = max7300;
