@@ -1,5 +1,5 @@
 {
-  "name": "max7300",
+  "name": "max7300aax",
   "version": "1.0.0",
   "description": "Module to controle the max7300aax+",
   "main": "i2c-max7300.js",
@@ -9,6 +9,16 @@
   "keywords": [
     "max7300"
   ],
-  "author": "Jonathan Weinert",
-  "license": "ISC"
+  "author": "Jonathan Weinert <jo.weinert@h2o-protec.de>",
+  "dependencies": {
+    "i2c": ">= 0.2.3"
+  },
+  "engines": {
+  "node": ">=4.6.1"
+  }
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JW94/max7300.git"
+  },
 }
