@@ -1,4 +1,4 @@
-# DAC6573
+# MAX7300AAX
 =========
 
 A module to interact with the max7300aax
