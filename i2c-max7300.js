@@ -2,7 +2,7 @@
 
 var i2c = require('i2c');
 
-var max7300 = function(device, address) 
+var max7300aax = function(device, address) 
 {
     this.device = device;
     this.address = address;
@@ -11,7 +11,7 @@ var max7300 = function(device, address)
 }
 
 
-max7300.prototype.getModeMax7300 = function(callback)
+max7300aax.prototype.getModeMax7300 = function(callback)
 {
     this.wire.readBytes(0x04,1, function(err,data)
         {
@@ -32,7 +32,7 @@ max7300.prototype.getModeMax7300 = function(callback)
     });
 }
 
-max7300.prototype.setModeMax7300 = function(mode,callback)
+max7300aax.prototype.setModeMax7300 = function(mode,callback)
 {
     this.wire.writeBytes(0x04,[mode , 0], function(err)
     {
@@ -43,7 +43,7 @@ max7300.prototype.setModeMax7300 = function(mode,callback)
     });
 }
 
-max7300.prototype.getConfigPinMax7300 = function(int_pin,callback)
+max7300aax.prototype.getConfigPinMax7300 = function(int_pin,callback)
 {
     var cmd = "";
     var tempConfig = "";
@@ -148,7 +148,7 @@ max7300.prototype.getConfigPinMax7300 = function(int_pin,callback)
     });
 }
 
-max7300.prototype.setConfigPinMax7300 = function(int_pin,state,callback)
+max7300aax.prototype.setConfigPinMax7300 = function(int_pin,state,callback)
 {
     var self = this;
     var port = "";
@@ -245,7 +245,7 @@ max7300.prototype.setConfigPinMax7300 = function(int_pin,state,callback)
     }, 100);
 }
 
-max7300.prototype.getStateMax7300 = function(int_pin,callback)
+max7300aax.prototype.getStateMax7300 = function(int_pin,callback)
 {
     var cmd = "";
     var int_port= "";
@@ -298,7 +298,7 @@ max7300.prototype.getStateMax7300 = function(int_pin,callback)
     });
 }
 
-max7300.prototype.setStatePinMax7300 = function(int_pin,state,callback)
+max7300aax.prototype.setStatePinMax7300 = function(int_pin,state,callback)
 {
     var self = this;
     var port = "";
@@ -455,4 +455,4 @@ max7300.prototype.setStatePinMax7300 = function(int_pin,state,callback)
     // // 2: p0.2....
     // console.log(err);
 // });
-module.exports = max7300;
+module.exports = max7300aax;

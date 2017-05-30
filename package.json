@@ -1,6 +1,6 @@
 {
   "name": "max7300aax",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Module to controle the max7300aax+",
   "main": "i2c-max7300.js",
   "scripts": {
